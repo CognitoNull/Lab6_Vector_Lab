@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    /* Start interactive vector calculator */
     run_interface();
 
     return 0;
