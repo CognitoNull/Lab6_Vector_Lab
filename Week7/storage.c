@@ -6,19 +6,21 @@
  * @version 
  * @copyright Copyright (C) 2026 Jonathan Cortes. All rights reserved.
 **********************************************************************************/
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "storage.h"
 
-static vect vectors[MAX_VECTORS];
+static vect *vectors = NULL;
+static int count = 0;
+static int capacity = 0;
 
 /* function to find a given vector by name*/
 vect *findvect(char *name)
 {
     int i;
 
-    for (i = 0; i < MAX_VECTORS; i++)
+    for (i = 0; i < count; i++)
     {
         if (strcmp(vectors[i].name, name) == 0)
         {
@@ -29,11 +31,12 @@ vect *findvect(char *name)
     return NULL;
 }
 
-/* function to add a vector to an array*/
+/* function to add or replace a vector*/
 int addvect(vect newvect)
 {
-    int i;
     vect *existing;
+    vect *temp;
+    int new_capacity;
 
     existing = findvect(newvect.name);
 
@@ -42,17 +45,26 @@ int addvect(vect newvect)
         *existing = newvect;
         return 0;
     }
-
-    for (i = 0; i < MAX_VECTORS; i++)
+/* Increase memory when storage is full*/
+    if (count == capacity)
     {
-        if (vectors[i].name[0] == '\0')
+        new_capacity = (capacity == 0) ? 10 : capacity * 2;
+
+        temp = realloc(vectors, new_capacity * sizeof(vect));
+
+        if (temp == NULL)
         {
-            vectors[i] = newvect;
-            return 0;
+            return -1;
         }
+
+        vectors = temp;
+        capacity = new_capacity;
     }
 
-    return -1;
+    vectors[count] = newvect;
+    count++;
+
+    return;
 }
 
 /* one word command function to list 
@@ -61,26 +73,28 @@ void list_vectors(void)
 {
     int i;
     
-    for (i = 0; i < MAX_VECTORS; i++)
+    for (i = 0; i < count; i++)
     {
-        if (vectors[i].name[0] != '\0')
-        {
-            printf("%s = %.2f %.2f %.2f\n",
-                vectors[i].name,
-                vectors[i].x,
-                vectors[i].y,
-                vectors[i].z);
-        }
+        printf("%s = %.2f %.2f %.2f\n",
+            vectors[i].name,
+            vectors[i].x,
+            vectors[i].y,
+            vectors[i].z);
     }
 }
 
 /* one word command function to clear vectors*/
 void clear_vectors(void)
 {
-    int i;
+    free(vectors);
 
-    for (i = 0; i < MAX_VECTORS; i++)
-    {
-        vectors[i].name[0] = '\0';
-    }
+    vectors = NULL;
+    count = 0;
+    capacity = 0;
+}
+
+/* Release memory on exit*/
+void free_vectors(void)
+{
+    clear_vectors();
 }
