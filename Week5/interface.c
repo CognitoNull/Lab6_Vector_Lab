@@ -161,10 +161,20 @@ void run_interface(void)
                 printf("Vector memory full.\n");
             }
         }
-        else if (sscanf(input, "%19s %c", name, &extra) ==1)
+        else if (sscanf(input, "%19s %c %19s %c",
+            left, &op, right, &extra) == 3
+            && (op == '+' || op == '-' || op == '*'))
+            {
+                if (evaluate(left, op, right, &result))
+                {
+                    strcpy(result.name, "ans");
+                    print_vector(result);
+                }
+            }
+        else if (sscanf(input, "%19s %c", name, &extra) == 1)
         {
             found = findvect(name);
-
+        
             if (found != NULL)
             {
                 print_vector(*found);
@@ -174,19 +184,9 @@ void run_interface(void)
                 printf("Vector not found.\n");
             }
         }
-        else if (sscanf(input, "%19s, %c %19s %c",
-                        left, *op, right, &extra) == 3
-                        && (op == '+' || op == '-' || op == '*'))
-        {
-            if (evaluate(left, op, right, &result))
-            {
-                strcpy(result.name, "ans");
-                print_vector(result);
-            }
-        }
         else
         {
             printf("Invalid command.\n");
         }
+        }
     }
-}
