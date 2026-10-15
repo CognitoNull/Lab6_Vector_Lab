@@ -32,7 +32,7 @@ void print_help(void)
 
 static void print_vector(vect v)
 {
-    printf("%s = %.2f %2.f %.2f\n",
+    printf("%s = %.2f %.2f %.2f\n",
            v.name, v.x, v.y, v.z);
 }
 
@@ -116,7 +116,11 @@ void run_interface(void)
     while(1)
     {
         printf("minimat> ");
-        fgets(input, sizeof(input), stdin);
+
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+        break;
+        }
 
         input[strcspn(input, "\n")] = '\0';
 
@@ -157,17 +161,32 @@ void run_interface(void)
                 printf("Vector memory full.\n");
             }
         }
-        else if (scanf(input, "%19s %c", name, &extra) ==1)
+        else if (sscanf(input, "%19s %c", name, &extra) ==1)
         {
-            vect *found = findvect(name);
+            found = findvect(name);
 
             if (found != NULL)
             {
-                printf("%s = %.2f %.2f %.2f\n",
-                        found->name,
-                        found->x,
-                        found->y,)
+                print_vector(*found);
             }
+            else
+            {
+                printf("Vector not found.\n");
+            }
+        }
+        else if (sscanf(input, "%19s, %c %19s %c",
+                        left, *op, right, &extra) == 3
+                        && (op == '+' || op == '-' || op == '*'))
+        {
+            if (evaluate(left, op, right, &result))
+            {
+                strcpy(result.name, "ans");
+                print_vector(result);
+            }
+        }
+        else
+        {
+            printf("Invalid command.\n");
         }
     }
 }
