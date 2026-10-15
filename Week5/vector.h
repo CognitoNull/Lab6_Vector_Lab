@@ -20,6 +20,6 @@ typedef struct
 
 vect add(vect a, vect b);
 vect subtract(vect a, vect b);
-vect multiply(vect a, vect b);
+vect multiply(vect a, double scalar);
 
 #endif

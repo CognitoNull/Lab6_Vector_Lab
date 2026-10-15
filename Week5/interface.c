@@ -28,6 +28,7 @@ void print_help(void)
     printf(" a + b             Add vectors\n");
     printf(" a - b             Subtract vectors\n");
     printf(" a * 2 or 2 * a    Scalar multiplication\n");
+    printf(" c = a + b         Store operaiton result\n");
 }
 
 static void print_vector(vect v)
@@ -140,53 +141,97 @@ void run_interface(void)
         {
             clear_vectors();
         }
-        else if (sscanf(input, "%19s = %lf %lf %lf",
-                        name, &x, &y, &z) == 4)
+        else
         {
-            strcpy(newvect.name, name);
-            newvect.x = x;
-            newvect.y = y;
-            newvect.z = z;
+            equals = strchr(input, '=');
+            expression = input;
+            name[0] = '\0';
 
-            if (addvect(newvect) == 0)
+            if (equals != NULL)
             {
-                printf("%s = %.2f %.2f %.2f\n",
-                    newvect.name,
-                    newvect.x,
-                    newvect.y,
-                    newvect.z);
+                *equals = '\0';
+
+                if (sscanf(input, " %19s %c", name, &extra) != 1)
+                {
+                    printf("Invalid assignment.\n");
+                    continue;
+                }
+
+                expression = equals + 1;
             }
-            else
+            
+            for (p = expression; *p != '\0'; p++)
             {
-                printf("Vector memory full.\n");
+                if (*p == ',')
+                {
+                    *p = ' ';
+                }
             }
-        }
-        else if (sscanf(input, "%19s %c %19s %c",
-            left, &op, right, &extra) == 3
-            && (op == '+' || op == '-' || op == '*'))
+
+            if (equals != NULL &&
+                sscanf(expression, "%1f %1f %1f %c",
+                        &x, &y, &z, &extra) == 3)
+            {
+                strcpy(newvect.name, name);
+                newvect.x = x;
+                newvect.y = y;
+                newvect.z = z;
+
+                if (addvect(newvect) == 0)
+                {
+                    print_vector(newvect);
+                }
+                else
+                {
+                    printf("Vector memory full.\n");
+                }
+            }
+            else if (sscanf(expression, "%19s %c %19 %c",
+                    left, &op, right, &extra) == 3 &&
+                    (op == '+' || op == '-' || op == '*'))
             {
                 if (evaluate(left, op, right, &result))
+                {
+                    if (equals != NULL)
+                    {
+                        strcpy(result.name, name);
+
+                        if (addvect(result) == 0)
+                        {
+                            print_vector(result);
+                        }
+                        else
+                        {
+                            printf("Vector memory full.\n");
+                        }
+                    }
+                else
                 {
                     strcpy(result.name, "ans");
                     print_vector(result);
                 }
+                }
             }
-        else if (sscanf(input, "%19s %c", name, &extra) == 1)
-        {
-            found = findvect(name);
-        
-            if (found != NULL)
+            else if (equals == NULL && 
+                    sscanf(input, " %19s %c", name, &extra) == 1)
             {
-                print_vector(*found);
+                found = findvect(name);
+
+                if (found != NULL)
+                {
+                    print_vector(*found);
+                }
+                else
+                {
+                    printf("Vector not found.\n");
+                }
             }
             else
             {
-                printf("Vector not found.\n");
+                printf("Invalid command.\n");
             }
+
+        
         }
-        else
-        {
-            printf("Invalid command.\n");
-        }
-        }
+    }
     }
