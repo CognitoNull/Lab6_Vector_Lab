@@ -169,7 +169,7 @@ void run_interface(void)
             }
 
             if (equals != NULL &&
-                sscanf(expression, "%1f %1f %1f %c",
+                sscanf(expression, "%lf %lf %lf %c",
                         &x, &y, &z, &extra) == 3)
             {
                 strcpy(newvect.name, name);
@@ -186,7 +186,7 @@ void run_interface(void)
                     printf("Vector memory full.\n");
                 }
             }
-            else if (sscanf(expression, "%19s %c %19 %c",
+            else if (sscanf(expression, "%19s %c %19s %c",
                     left, &op, right, &extra) == 3 &&
                     (op == '+' || op == '-' || op == '*'))
             {
