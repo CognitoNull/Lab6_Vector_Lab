@@ -64,7 +64,7 @@ int addvect(vect newvect)
     vectors[count] = newvect;
     count++;
 
-    return;
+    return 0;
 }
 
 /* one word command function to list 

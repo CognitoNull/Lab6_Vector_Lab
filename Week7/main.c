@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "interface.h"
+#include "storage.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
     }
 
     run_interface();
+    free_vectors();
 
     return 0;
 }
