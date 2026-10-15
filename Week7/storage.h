@@ -17,5 +17,6 @@ vect *findvect(char *name);
 void list_vectors(void);
 void clear_vectors(void);
 void free_vectors(void);
+int load_vectors(const char *filename);
 
 #endif
