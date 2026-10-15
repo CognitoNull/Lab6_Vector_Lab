@@ -8,28 +8,109 @@
 **********************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "interface.h"
 #include "storage.h"
+#include "vector.h"
 
 /* Tells user their single word command options*/
 void print_help(void)
 {
     printf("Vector Calculator Commands:\n");
-    printf(" help          Display this help screen\n");
-    printf(" list          List stored vectors\n");
-    printf(" clear         Clear stored vectors\n");
-    printf(" quit          Exit program\n");
+    printf(" help              Display this help screen\n");
+    printf(" list              List stored vectors\n");
+    printf(" clear             Clear stored vectors\n");
+    printf(" quit              Exit program\n");
+    printf(" a = 1 2 3         Assign vector\n");
+    printf(" a                 Display vector\n");
+    printf(" a + b             Add vectors\n");
+    printf(" a - b             Subtract vectors\n");
+    printf(" a * 2 or 2 * a    Scalar multiplication\n");
 }
 
+static void print_vector(vect v)
+{
+    printf("%s = %.2f %2.f %.2f\n",
+           v.name, v.x, v.y, v.z);
+}
+
+static int read_number(const char *s, double *value)
+{
+    char *end;
+    *value = strtod(s, &end);
+
+    if (s == end)
+        return 0;
+
+    while (isspace((unsigned char)*end))
+        end++;
+
+    return *end =='\0';
+}
+
+static int evaluate(char *left, char op, char *right,
+                    vect *result)
+{
+    vect *a;
+    vect *b;
+    double scalar;
+
+    a = findvect(left);
+    b = findvect(right);
+
+    if (op == '+' || op == '-')
+    {
+        if (a == NULL || b == NULL)
+        {
+            printf("Vector not found.\n");
+            return 0;
+        }
+        if (op == '+')
+            *result = add(*a, *b);
+        else
+            *result = subtract(*a, *b);
+
+        return 1;
+    }
+
+    if (op == '*')
+    {
+        if (a != NULL && read_number(right, &scalar))
+        {
+            *result = multiply(*a, scalar);
+            return 1;
+        }
+        if (b != NULL && read_number(left, &scalar))
+        {
+            *result = multiply(*b, scalar);
+            return 1;
+        }
+
+        printf("Invalid scalar multiplication.\n");
+        return 0;
+    }
+    printf("Invalid operator.\n");
+    return 0;
+}
 
 void run_interface(void)
 {
     char input[100];
     char name[20];
+    char left[20];
+    char right[20];
+    char op;
+    char extra;
+    char *expression;
+    char *equals;
+    char *p;
     double x;
     double y;
     double z;
+    vect result;
+    vect *found;
     vect newvect;
 
     while(1)
@@ -74,6 +155,18 @@ void run_interface(void)
             else
             {
                 printf("Vector memory full.\n");
+            }
+        }
+        else if (scanf(input, "%19s %c", name, &extra) ==1)
+        {
+            vect *found = findvect(name);
+
+            if (found != NULL)
+            {
+                printf("%s = %.2f %.2f %.2f\n",
+                        found->name,
+                        found->x,
+                        found->y,)
             }
         }
     }
