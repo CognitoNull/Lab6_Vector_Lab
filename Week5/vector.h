@@ -18,4 +18,8 @@ typedef struct
     double z;
 } vect;
 
+vect add(vect a, vect b);
+vect subtract(vect a, vect b);
+vect multiply(vect a, vect b);
+
 #endif
