@@ -99,3 +99,91 @@ void free_vectors(void)
     clear_vectors();
 }
 
+/* Load vectors from a CSV file. */
+int load_vectors(const char *filename)
+{
+    FILE *file;
+    char line[256];
+    char extra;
+    vect newvect;
+
+    file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        printf("Could not open file.\n");
+        return -1;
+    }
+
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        if (strspn(line, " \t\r\n") == strlen(line))
+            continue;
+
+        if (strchr(line, '\n') == NULL && !feof(file))
+        {
+            printf("CSV line is too long.\n");
+            fclose(file);
+            return -1;
+        }
+
+        if (sscanf(line, " %19[^,],%lf,%lf,%lf %c",
+                   newvect.name, &newvect.x, &newvect.y,
+                   &newvect.z, &extra) != 4)
+        {
+            printf("Invalid CSV line.\n");
+            fclose(file);
+            return -1;
+        }
+
+        if (addvect(newvect) != 0)
+        {
+            printf("Not enough memory to load vectors.\n");
+            fclose(file);
+            return -1;
+        }
+    }
+
+    if (ferror(file))
+    {
+        printf("Could not read file.\n");
+        fclose(file);
+        return -1;
+    }
+
+    fclose(file);
+    return 0;
+}
+
+/* Save stored vectors to a CSV file. */
+int save_vectors(const char *filename)
+{
+    FILE *file;
+    int i;
+
+    file = fopen(filename, "w");
+    if (file == NULL)
+    {
+        printf("Could not open file for saving.\n");
+        return -1;
+    }
+
+    for (i = 0; i < count; i++)
+    {
+        if (fprintf(file, "%s,%.17g,%.17g,%.17g\n",
+                    vectors[i].name, vectors[i].x,
+                    vectors[i].y, vectors[i].z) < 0)
+        {
+            printf("Could not write file.\n");
+            fclose(file);
+            return -1;
+        }
+    }
+
+    if (fclose(file) != 0)
+    {
+        printf("Could not finish saving file.\n");
+        return -1;
+    }
+
+    return 0;
+}

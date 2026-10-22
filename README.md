@@ -33,6 +33,8 @@ Enter commands at the `minimat>` prompt. To show the help screen without startin
 - `list` shows all stored vectors.
 - `clear` removes all stored vectors and frees their memory.
 - `quit` closes the calculator.
+- `load test_vectors.csv` loads vectors from a CSV file. Matching names are replaced, and other stored vectors are kept.
+- `save saved_vectors.csv` saves all stored vectors to a CSV file and overwrites the file if it already exists.
 - `a = 1 2 3` creates a vector named `a`. Commas also work, like `a = 1,2,3`.
 - `a` shows the values stored in vector `a`.
 - `a + b` adds two vectors.
@@ -42,6 +44,17 @@ Enter commands at the `minimat>` prompt. To show the help screen without startin
 
 Create vectors before using them in a calculation. Using an existing name replaces that vector. A calculation without an assignment displays the result without storing it.
 
+## CSV Files
+
+Each line contains a vector name followed by its three values:
+
+```csv
+a,1,2,3
+b,4,5,6
+```
+
+File paths can be relative or absolute, but cannot contain spaces. Include the full filename; the program does not add `.csv` for you. If loading stops because of a bad line, vectors loaded before that line stay in memory.
+
 ## Dynamic Memory
 
 The program uses a dynamic array to store vectors. It starts with room for 10 vectors and doubles the space when the array fills up. The memory is freed when you enter `clear` or exit normally.
@@ -50,5 +63,5 @@ The program uses a dynamic array to store vectors. It starts with room for 10 ve
 
 - `Week5` contains the earlier version of the calculator.
 - `Week7` contains the version with dynamic memory.
-- CSV loading and saving still need to be added for Lab 7.
+- The Week 7 version also supports CSV loading and saving.
 - `Labs` contains the lab handouts.

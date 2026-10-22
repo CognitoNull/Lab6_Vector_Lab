@@ -21,6 +21,8 @@ void print_help(void)
     printf("Vector Calculator Commands:\n");
     printf(" help              Display this help screen\n");
     printf(" list              List stored vectors\n");
+    printf(" load <filename>   Load vectors from a CSV file\n");
+    printf(" save <filename>   Save vectors to a CSV file\n");
     printf(" clear             Clear stored vectors\n");
     printf(" quit              Exit program\n");
     printf(" a = 1 2 3         Assign vector\n");
@@ -99,6 +101,7 @@ static int evaluate(char *left, char op, char *right,
 void run_interface(void)
 {
     char input[100];
+    char filename[100];
     char name[20];
     char left[20];
     char right[20];
@@ -136,6 +139,22 @@ void run_interface(void)
         else if (strcmp(input, "list") == 0)
         {
             list_vectors();
+        }
+        else if (sscanf(input, " load %99s %c", filename, &extra) == 1 &&
+                 strncmp(input, "load ", 5) == 0)
+        {
+            if (load_vectors(filename) == 0)
+            {
+                printf("Vectors loaded.\n");
+            }
+        }
+        else if (sscanf(input, " save %99s %c", filename, &extra) == 1 &&
+                 strncmp(input, "save ", 5) == 0)
+        {
+            if (save_vectors(filename) == 0)
+            {
+                printf("Vectors saved.\n");
+            }
         }
         else if (strcmp(input, "clear") == 0)
         {
